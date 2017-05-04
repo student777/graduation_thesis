@@ -24,13 +24,30 @@ def get_by_hour_month():
     # settings
     key = '48734e4c5264617235305a58565144'
     date = '201701'
-    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayTime/1/5/%s/' % (key, date)
+    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayTime/1/1/%s/' % (key, date)
 
     # retrieve data
     f = urllib.request.urlopen(url)
     data = json.loads(f.read().decode('utf-8'))
-    print('역명    04승    04하    04승    04하')
-    for item in data['CardSubwayTime']['row']:
-        print('%s    %i    %i    %i    %i' % (item['SUB_STA_NM'], item['FOUR_RIDE_NUM'], item['FOUR_ALIGHT_NUM'], item['FOUR_RIDE_NUM'], item['FOUR_ALIGHT_NUM']))
 
+    result_set = []
+
+    for item in data['CardSubwayTime']['row']:
+        print(item['SUB_STA_NM'])
+        result_set.append([
+            item['FOUR_RIDE_NUM'],
+            item['FIVE_RIDE_NUM'],
+            item['SIX_RIDE_NUM'],
+            item['SEVEN_RIDE_NUM'],
+            item['EIGHT_RIDE_NUM'],
+        ])
+        result_set.append([
+            item['FOUR_ALIGHT_NUM'],
+            item['FIVE_ALIGHT_NUM'],
+            item['SIX_ALIGHT_NUM'],
+            item['SEVEN_ALIGHT_NUM'],
+            item['EIGHT_ALIGHT_NUM'],
+        ])
     print('total count: %i' % data['CardSubwayTime']['list_total_count'])
+
+    return result_set
