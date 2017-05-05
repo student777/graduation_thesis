@@ -1,12 +1,13 @@
 import json
+import strings
 import urllib.request
 
 
 def get_by_date():
     # settings
-    key = '5059424d5764617237384455797051'
+    api_key = strings.api_keys['date']
     date = '20170102'
-    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayStatsNew/1/1000/%s/' % (key, date)  # get data as much as possible(1000)
+    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayStatsNew/1/1/%s/' % (api_key, date)  # get data as much as possible(1000)
 
     # retrieve data
     f = urllib.request.urlopen(url)
@@ -22,32 +23,23 @@ def get_by_date():
 
 def get_by_hour_month():
     # settings
-    key = '48734e4c5264617235305a58565144'
+    api_key = strings.api_keys['hour']
     date = '201701'
-    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayTime/1/1/%s/' % (key, date)
+    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayTime/1/1/%s/' % (api_key, date)
 
     # retrieve data
-    f = urllib.request.urlopen(url)
-    data = json.loads(f.read().decode('utf-8'))
+    response = urllib.request.urlopen(url)
+    response_dict = json.loads(response.read().decode('utf-8'))
 
-    result_set = []
+    traffic_list = []
 
-    for item in data['CardSubwayTime']['row']:
-        print(item['SUB_STA_NM'])
-        result_set.append([
-            item['FOUR_RIDE_NUM'],
-            item['FIVE_RIDE_NUM'],
-            item['SIX_RIDE_NUM'],
-            item['SEVEN_RIDE_NUM'],
-            item['EIGHT_RIDE_NUM'],
-        ])
-        result_set.append([
-            item['FOUR_ALIGHT_NUM'],
-            item['FIVE_ALIGHT_NUM'],
-            item['SIX_ALIGHT_NUM'],
-            item['SEVEN_ALIGHT_NUM'],
-            item['EIGHT_ALIGHT_NUM'],
-        ])
-    print('total count: %i' % data['CardSubwayTime']['list_total_count'])
+    for item in response_dict['CardSubwayTime']['row']:
+        name = item['SUB_STA_NM']
+        traffic_ride = [item[key] for key in strings.keys_traffic_ride]
+        traffic_alight = [item[key] for key in strings.keys_traffic_alight]
+        traffic = {'name': name, 'ride': traffic_ride, 'alight': traffic_alight}
+        traffic_list.append(traffic)
 
-    return result_set
+    print('total count: %i' % response_dict['CardSubwayTime']['list_total_count'])
+
+    return traffic_list
