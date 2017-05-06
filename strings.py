@@ -48,4 +48,4 @@ keys_traffic_alight = ['FOUR_ALIGHT_NUM',
                        'TWO_ALIGHT_NUM',
                        'THREE_ALIGHT_NUM']
 
-api_keys = {'date': '5059424d5764617237384455797051', 'hour': '48734e4c5264617235305a58565144'}
+api_keys = {'date': '5059424d5764617237384455797051', 'hour_month': '48734e4c5264617235305a58565144'}
