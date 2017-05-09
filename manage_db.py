@@ -1,9 +1,16 @@
+import os
 import csv
 import sqlite3
+import strings
+
+
+output_dir = './out/'
+file_name = 'subway_location.db'
+db_file = output_dir + file_name
 
 
 def setup_db():
-    conn = sqlite3.connect('out/db.sqlite3')
+    conn = sqlite3.connect(db_file)
     c = conn.cursor()
 
     # create table
@@ -26,7 +33,7 @@ def setup_db():
 def get_location(name, line_num):
     station = check_station(name, line_num)
     # fetch data
-    conn = sqlite3.connect('out/db.sqlite3')
+    conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute('SELECT lat, lng FROM stations where name=? and line_num=?', station)
     station_info = c.fetchone()
@@ -35,10 +42,6 @@ def get_location(name, line_num):
 
 
 def check_station(name, line_num):
-    # unsupported line_num
-    if line_num in ['E', 'G', 'I', 'I2', 'S', 'U']:
-        raise Exception
-
     '''diffrence between the line name of two APIs'''
     # 1) remove string in brackets
     start = name.find('(')
@@ -67,25 +70,18 @@ def check_station(name, line_num):
     elif name == '쌍용':
         return '쌍용(나사렛대)', '1'
 
-    # 3) line number difference
-    line_num_map = {'1호선': '1', '경부선': '1', '경인선': '1', '장항선': '1', '경원선': '1',
-                    '2호선': '2',
-                    '3호선': '3', '일산선': '3',
-                    '4호선': '4', '과천선': '4', '안산선': '4',
-                    '5호선': '5',
-                    '6호선': '6',
-                    '7호선': '7',
-                    '8호선': '8',
-                    '9호선': '9', '9호선2단계': '9',
-                    '공항철도 1호선': 'A',
-                    '분당선': 'B',
-                    '경춘선': 'G',
-                    '수인선': 'SU',
-                    '경의선': 'K', '중앙선': 'K',
-                    '경강선': 'KK',
-                    }
-
-    if line_num not in line_num_map:
+    # 3) map line_num into database key
+    # unsupported line num: ['E', 'G', 'I', 'I2', 'S', 'U']
+    lnmp = strings.line_num_map
+    if line_num not in lnmp:
         raise KeyError
+    line_num = lnmp[line_num]
 
-    return name, line_num_map[line_num]
+    return name, line_num
+
+
+if __name__ == '__main__':
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+    setup_db()
+    print('database created')

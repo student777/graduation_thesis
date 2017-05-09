@@ -6,7 +6,7 @@ import urllib.request
 url = 'http://openapi.seoul.go.kr:8088/%s/json/%s/1/1000/%s/'
 
 
-def get_by_date(date='20170101'):
+def get_by_date(date):
     # settings
     api_key = '5059424d5764617237384455797051'
     api_name = 'CardSubwayStatsNew'
@@ -29,7 +29,7 @@ def get_by_date(date='20170101'):
     return station_list, count
 
 
-def get_by_hour(month='201701'):
+def get_by_hour(month):
     # settings
     api_key = '48734e4c5264617235305a58565144'
     api_name = 'CardSubwayTime'
@@ -50,3 +50,8 @@ def get_by_hour(month='201701'):
 
     count = response_dict['CardSubwayTime']['list_total_count']
     return traffic_list, count
+
+
+if __name__ == '__main__':
+    # get_by_date('20170101')
+    get_by_hour('201701')

@@ -1,6 +1,6 @@
-지하철 역별 시간별 승하차인원 clustering & visualization
-지하철역 좌표값, 승하차인원 dataframe
-부동산 실거래가 & 좌표값 dataframe
-price vs traffic modeling
-data fitting & visualization
-discussion
+Get subway station hourly traffic: clustering & visualization
+Make dataframe: station location vs monthly traffic
+Make dataframe: real estate price vs location
+Modeling: (2) vs (3)
+Data fitting & Visualization
+Discussion
