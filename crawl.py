@@ -3,7 +3,6 @@ import strings
 import urllib.request
 
 
-allowed_line_num = ['1호선', '경부선', '경인선', '장항선']
 url = 'http://openapi.seoul.go.kr:8088/%s/json/%s/1/1000/%s/'
 
 
@@ -19,10 +18,6 @@ def get_by_date(date='20170101'):
     station_list = []
 
     for item in response_dict['CardSubwayStatsNew']['row']:
-        # filter by line_num
-        if not item['LINE_NUM'] in allowed_line_num:
-            continue
-
         name = item['SUB_STA_NM']
         line_num = item['LINE_NUM']
         traffic_ride = int(item['RIDE_PASGR_NUM'])
@@ -46,10 +41,6 @@ def get_by_hour(month='201701'):
     traffic_list = []
 
     for item in response_dict['CardSubwayTime']['row']:
-        # filter by line_num
-        if not item['LINE_NUM'] in allowed_line_num:
-            continue
-
         name = item['SUB_STA_NM']
         traffic_ride = [int(item[key]) for key in strings.keys_traffic_ride]
         traffic_alight = [int(item[key]) for key in strings.keys_traffic_alight]
