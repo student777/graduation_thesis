@@ -37,14 +37,29 @@ def price_location(month):
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         book = xlrd.open_workbook('res/price/201701/seoul/아파트(매매).xlsx')
         sh = book.sheet_by_index(0)
-        for rx in range(sh.nrows):
+
+        # To prevent duplicates
+        address_set = set()
+        for rx in range(1, sh.nrows):
             row = sh.row(rx)
             address = row[0].value + ' ' + row[1].value
-            lat, lng = location(address)
+            address_set.add(address)
+
+        counter = 0
+        for address in address_set:
+            try:
+                lat, lng = location(address)
+            except IndexError:  # when api limit exceeded
+                print(counter)
+                continue
             area = float(row[5].value)
             price = int(row[8].value.replace(',', ''))
             year_bulit = int(row[10].value)
             csvwriter.writerow([lat, lng, area, year_bulit, price])
+            counter += 1
+            if counter % 100 == 0:
+                print(counter)
+
     print('successfully finished')
 
 
