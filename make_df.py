@@ -1,14 +1,14 @@
 import manage_db
-from get_data import traffic_by_hour, location
+from get_data import traffic_by_hour, geopoint
 import csv
 import os
 import xlrd
 
 
-output_dir = './out/'
-
-
 def traffic_location(month):
+    output_dir = './out/traffic/'
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
     file_name = 'monthly_traffic_' + month + '.csv'
     csv_file = output_dir + file_name
 
@@ -30,41 +30,45 @@ def traffic_location(month):
 
 
 def price_location(month):
+    output_dir = './out/price/'
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
     file_name = 'price_location_' + month + '.csv'
     csv_file = output_dir + file_name
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        book = xlrd.open_workbook('res/price/201701/seoul/아파트(매매).xlsx')
+        book = xlrd.open_workbook('res/price/{}/seoul/아파트(매매).xlsx'.format(month))
         sh = book.sheet_by_index(0)
-
-        # To prevent duplicates
-        address_set = set()
-        for rx in range(1, sh.nrows):
+        counter_total = 0
+        counter_api = 0
+        address_dict = {}
+        number_rows = sh.nrows
+        for rx in range(1, number_rows):
             row = sh.row(rx)
-            address = row[0].value + ' ' + row[1].value
-            address_set.add(address)
-
-        counter = 0
-        for address in address_set:
-            try:
-                lat, lng = location(address)
-            except IndexError:  # when api limit exceeded
-                print(counter)
-                continue
             area = float(row[5].value)
             price = int(row[8].value.replace(',', ''))
             year_bulit = int(row[10].value)
-            csvwriter.writerow([lat, lng, area, year_bulit, price])
-            counter += 1
-            if counter % 100 == 0:
-                print(counter)
 
+            # To prevent address duplicates
+            address = row[0].value + ' ' + row[1].value
+            if address in address_dict.keys():
+                lat, lng = address_dict[address]
+            else:
+                point = geopoint(address)
+                counter_api += 1
+                if point is None:  # HTTP 404 error
+                    continue
+                address_dict[address] = point
+
+            csvwriter.writerow([point[0], point[1], area, year_bulit, price])
+            counter_total += 1
+            if counter_total % 100 == 0:
+                print('{}/{} completed'.format(counter_total, number_rows))
+        print('API used: {} counts'.format(counter_api))
     print('successfully finished')
 
 
 if __name__ == '__main__':
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
     # traffic_location('201701')
     price_location('201701')

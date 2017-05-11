@@ -1,7 +1,7 @@
 import json
 import strings
 import urllib.request
-from urllib.parse import quote
+import ssl
 
 
 def traffic_by_date(date):
@@ -50,16 +50,27 @@ def traffic_by_hour(month):
     return traffic_list, count
 
 
-def location(address):
+def geopoint(address):
     # settings
-    url = 'http://maps.googleapis.com/maps/api/geocode/json?address=%s'
-    api_endpoint = url % quote(address)
+    client_id = "P9BDCV5cHm4ftrb06dsg"
+    client_secret = "NmqczBy4aW"
+    url = "https://openapi.naver.com/v1/map/geocode?query=" + urllib.parse.quote(address)
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id", client_id)
+    request.add_header("X-Naver-Client-Secret", client_secret)
 
     # retrieve data
-    response = urllib.request.urlopen(api_endpoint)
-    response_dict = json.loads(response.read().decode('utf-8'))
-    location = response_dict['results'][0]['geometry']['location']
-    return location['lat'], location['lng']
+    try:
+        response = urllib.request.urlopen(request, context=ssl._create_unverified_context())
+    except urllib.error.HTTPError:
+        return
+    rescode = response.getcode()
+    if rescode == 200:
+        response_dict = json.loads(response.read().decode('utf-8'))
+        location = response_dict['result']['items'][0]['point']
+    else:
+        print("Error Code:" + rescode)
+    return location['x'], location['y']
 
 
 if __name__ == '__main__':

@@ -4,15 +4,13 @@ import numpy
 import os
 
 
-output_dir = './out/img'
-
-
 def hourly_traffic(month):
     plot_len = 3
     plot_size = plot_len * plot_len
     traffic_list, count = traffic_by_hour(month)  # about 500 counts
     fig_num = int(count / plot_size)
 
+    output_dir = './out/img'
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 
