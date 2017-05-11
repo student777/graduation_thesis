@@ -1,16 +1,14 @@
 import json
 import strings
 import urllib.request
+from urllib.parse import quote
 
 
-url = 'http://openapi.seoul.go.kr:8088/%s/json/%s/1/1000/%s/'
-
-
-def get_by_date(date):
+def traffic_by_date(date):
     # settings
+    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayStatsNew/1/1000/%s/'
     api_key = '5059424d5764617237384455797051'
-    api_name = 'CardSubwayStatsNew'
-    api_endpoint = url % (api_key, api_name, date)  # get data as much as possible(1000)
+    api_endpoint = url % (api_key, date)  # get data as much as possible(1000)
 
     # retrieve data
     response = urllib.request.urlopen(api_endpoint)
@@ -29,11 +27,11 @@ def get_by_date(date):
     return station_list, count
 
 
-def get_by_hour(month):
+def traffic_by_hour(month):
     # settings
+    url = 'http://openapi.seoul.go.kr:8088/%s/json/CardSubwayTime/1/1000/%s/'
     api_key = '48734e4c5264617235305a58565144'
-    api_name = 'CardSubwayTime'
-    api_endpoint = url % (api_key, api_name, month)  # get data as much as possible(1000)
+    api_endpoint = url % (api_key, month)  # get data as much as possible(1000)
 
     # retrieve data
     response = urllib.request.urlopen(api_endpoint)
@@ -52,6 +50,18 @@ def get_by_hour(month):
     return traffic_list, count
 
 
+def location(address):
+    # settings
+    url = 'http://maps.googleapis.com/maps/api/geocode/json?address=%s'
+    api_endpoint = url % quote(address)
+
+    # retrieve data
+    response = urllib.request.urlopen(api_endpoint)
+    response_dict = json.loads(response.read().decode('utf-8'))
+    location = response_dict['results'][0]['geometry']['location']
+    return location['lat'], location['lng']
+
+
 if __name__ == '__main__':
-    # get_by_date('20170101')
-    get_by_hour('201701')
+    # traffic_by_date('20170101')
+    traffic_by_hour('201701')

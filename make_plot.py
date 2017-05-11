@@ -1,14 +1,16 @@
 import matplotlib.pyplot as plt
-from get_data import get_by_hour
+from get_data import traffic_by_hour
 import numpy
 import os
 
 
+output_dir = './out/img'
+
+
 def hourly_traffic(month):
-    output_dir = './out/img'
     plot_len = 3
     plot_size = plot_len * plot_len
-    traffic_list, count = get_by_hour(month)  # about 500 counts
+    traffic_list, count = traffic_by_hour(month)  # about 500 counts
     fig_num = int(count / plot_size)
 
     if not os.path.isdir(output_dir):

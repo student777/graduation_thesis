@@ -5,3 +5,4 @@ This is my graduation project..
 # Requirements
 matplotlib  
 numpy  
+xlrd  
