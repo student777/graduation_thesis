@@ -1,4 +1,9 @@
 import matplotlib.pyplot as plt
+import matplotlib.cm
+from mpl_toolkits.basemap import Basemap
+from matplotlib.patches import Polygon
+from matplotlib.collections import PatchCollection
+from matplotlib.colors import Normalize
 from get_data import traffic_by_hour
 import numpy
 import os
@@ -43,5 +48,19 @@ def hourly_traffic(month):
     print('finished successfully')
 
 
+def price_map():
+    m = Basemap(resolution='f', projection='merc', llcrnrlon=121.763985, llcrnrlat=32.428539, urcrnrlon=131.185036, urcrnrlat=42.701393)
+    m.drawmapboundary(fill_color='#46bcec')
+    m.fillcontinents(color='#dfdfdf', lake_color='#46bcec')
+    m.drawcoastlines()
+    lons = [-4,-2,-1,1]
+    lats = [49.6,50,51,54]
+    x, y = m(lons, lats)
+    m.scatter(x, y, marker='o', color='m', s=[10,20,30,40])
+    plt.show()
+
+
+
 if __name__ == '__main__':
-    hourly_traffic('201701')
+    # hourly_traffic('201701')
+    price_map()
