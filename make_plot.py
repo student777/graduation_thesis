@@ -1,13 +1,9 @@
 import matplotlib.pyplot as plt
-import matplotlib.cm
-from mpl_toolkits.basemap import Basemap
-from matplotlib.patches import Polygon
-from matplotlib.collections import PatchCollection
-from matplotlib.colors import Normalize
 from get_data import traffic_by_hour
 import numpy
 import os
-
+from gmplot import GoogleMapPlotter
+import csv
 
 def hourly_traffic(month):
     plot_len = 3
@@ -48,17 +44,31 @@ def hourly_traffic(month):
     print('finished successfully')
 
 
-def price_map():
-    m = Basemap(resolution='f', projection='merc', llcrnrlon=121.763985, llcrnrlat=32.428539, urcrnrlon=131.185036, urcrnrlat=42.701393)
-    m.drawmapboundary(fill_color='#46bcec')
-    m.fillcontinents(color='#dfdfdf', lake_color='#46bcec')
-    m.drawcoastlines()
-    lons = [-4,-2,-1,1]
-    lats = [49.6,50,51,54]
-    x, y = m(lons, lats)
-    m.scatter(x, y, marker='o', color='m', s=[10,20,30,40])
-    plt.show()
+class myPlotter(GoogleMapPlotter):
+    def scatter(self, lats, lngs, color=None, size=None, marker=True, c=None, s=None, **kwargs):
+        color = color or c
+        kwargs["color"] = color
+        settings = self._process_kwargs(kwargs)
+        for lat, lng, s in zip(lats, lngs, size):
+            if marker:
+                self.marker(lat, lng, settings['color'])
+            else:
+                self.circle(lat, lng, s, **settings)
 
+
+def price_map():
+    gmap = myPlotter.from_geocode('Seoul')
+    lat_list = []
+    lng_list = []
+    size_list = []
+    with open('out/price/price_location_201701.csv', newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in spamreader:
+            lat_list.append(float(row[0]))
+            lng_list.append(float(row[1]))
+            size_list.append(float(row[4]) / 1000)
+    gmap.scatter(lng_list, lat_list, '#3B0B39', size=size_list, marker=False)
+    gmap.draw("out/test.html")
 
 
 if __name__ == '__main__':
