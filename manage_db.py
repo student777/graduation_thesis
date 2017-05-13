@@ -4,7 +4,7 @@ import strings
 
 
 def setup_db():
-    db_file = './out/dataframe/subway_location.db'
+    db_file = './out/dataframe/station_location.db'
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
 
@@ -27,7 +27,7 @@ def setup_db():
 
 
 def get_location(name, line_num):
-    db_file = './out/dataframe/subway_location.db'
+    db_file = './out/dataframe/station_location.db'
     station = check_station(name, line_num)
     # fetch data
     conn = sqlite3.connect(db_file)

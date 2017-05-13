@@ -62,17 +62,44 @@ def geopoint(address):
     # retrieve data
     try:
         response = urllib.request.urlopen(request, context=ssl._create_unverified_context())
-    except urllib.error.HTTPError:
+    except urllib.error.HTTPError as e:
+        print(e)
         return
     rescode = response.getcode()
     if rescode == 200:
         response_dict = json.loads(response.read().decode('utf-8'))
+        print(response_dict)
         location = response_dict['result']['items'][0]['point']
     else:
         print("Error Code:" + rescode)
     return location['x'], location['y']
 
 
+def geopoint_reverse(lat, lng):
+    # settings
+    client_id = "P9BDCV5cHm4ftrb06dsg"
+    client_secret = "NmqczBy4aW"
+    url = "https://openapi.naver.com/v1/map/reversegeocode?query={},{}".format(lng, lat)
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id", client_id)
+    request.add_header("X-Naver-Client-Secret", client_secret)
+
+    # retrieve data
+    try:
+        response = urllib.request.urlopen(request, context=ssl._create_unverified_context())
+    except urllib.error.HTTPError as e:
+        print(e)
+        return
+    rescode = response.getcode()
+    if rescode == 200:
+        response_dict = json.loads(response.read().decode('utf-8'))
+        location = response_dict['result']['items'][0]['addrdetail']['sido']
+    else:
+        print("Error Code:" + rescode)
+    return location
+
+
 if __name__ == '__main__':
     # traffic_by_date('20170101')
-    traffic_by_hour('201701')
+    # traffic_by_hour('201701')
+    print(geopoint_reverse(37.540693, 127.070230) == '서울특별시')
