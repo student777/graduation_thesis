@@ -41,7 +41,7 @@ def price_location(month, housing_type):
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        book = xlrd.open_workbook('res/{}/{}.xlsx'.format(month, housing_type))
+        book = xlrd.open_workbook('res/price_{}_{}.xlsx'.format(month, housing_type))
         sh = book.sheet_by_index(0)
         counter_total = 0
         counter_api = 0

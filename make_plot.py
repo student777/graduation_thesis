@@ -3,6 +3,7 @@ from get_data import traffic_by_hour
 import numpy
 from gmplot import GoogleMapPlotter
 import csv
+import os
 
 
 def hourly_traffic(month):
@@ -32,7 +33,13 @@ def hourly_traffic(month):
         fig.suptitle('지하철 역별 승차/하차 인원수')
         plt.tight_layout()
         plt.subplots_adjust(top=0.9)
-        path_to_save = './out/plot/traffic_hourly_{}/{}.png'.format(month, "%.2d" % i)
+
+        # make dir
+        output_dir = './out/plot/traffic_hourly_{}'.format(month)
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+
+        path_to_save = '{}}/{}.png'.format(output_dir, "%.2d" % i)
         fig.savefig(path_to_save)
         print('saved %s' % path_to_save)
         plt.close()
