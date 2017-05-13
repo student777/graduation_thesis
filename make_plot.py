@@ -46,11 +46,25 @@ class myPlotter(GoogleMapPlotter):
         settings = self._process_kwargs(kwargs)
         with open(data, newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            size_list = []
+            for row in reader:
+                size = float(row[colnum_info['size']])
+                size_list.append(size)
+            a, b = min(size_list), max(size_list)
+
+            csvfile.seek(0)  # reset the file to the beginning
             for row in reader:
                 lat = float(row[colnum_info['lat']])
                 lng = float(row[colnum_info['lng']])
-                size = float(row[colnum_info['size']]) / 1000
-                self.circle(lat, lng, size, **settings)
+                size = float(row[colnum_info['size']])
+                size_adjusted = self.cal_size(size, a, b)
+                self.circle(lat, lng, size_adjusted, **settings)
+
+    def cal_size(self, size, a, b):
+        c, d = 100, 1000
+        size_adjusted = (size - a) * (d - c) / (b - a) + c
+        print(size, size_adjusted)
+        return size_adjusted
 
 
 def price_map(month):
