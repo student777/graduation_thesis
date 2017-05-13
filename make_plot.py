@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from get_data import traffic_by_hour
 import numpy
-import os
 from gmplot import GoogleMapPlotter
 import csv
 
@@ -33,7 +32,7 @@ def hourly_traffic(month):
         fig.suptitle('지하철 역별 승차/하차 인원수')
         plt.tight_layout()
         plt.subplots_adjust(top=0.9)
-        path_to_save = './out/traffic/hour/hourly_traffic_{}_{}.png'.format(month, "%.2d" % i)
+        path_to_save = './out/plot/traffic_hourly/{}/{}.png'.format(month, "%.2d" % i)
         fig.savefig(path_to_save)
         print('saved %s' % path_to_save)
         plt.close()
@@ -56,28 +55,32 @@ class myPlotter(GoogleMapPlotter):
 
 def price_map(month):
     gmap = myPlotter.from_geocode('Seoul')
-    data = 'out/price/price_location_{}.csv'.format(month)
+    data = './out/dataframe/price_location_{}.csv'.format(month)
     colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
     color = '3B0B39'
     gmap.scatter(data, colnum_info, color)
-    gmap.draw("out/price/test.html")
+    gmap.draw("out/plot/price/{}.html".format(month))
 
 
 def traffic_map(month):
+    data = './out/dataframe/monthly_traffic_{}.csv'.format(month)
+
+    # draw ride traffic
     gmap = myPlotter.from_geocode('Seoul')
-    data = 'out/traffic/monthly_traffic_{}.csv'.format(month)
     colnum_info = {'lat': 2, 'lng': 3, 'size': 4}
     color = '#12a778'
     gmap.scatter(data, colnum_info, color)
-    # gmap.scatter(data, 2, 3, 5, 'red')
-    gmap.draw("out/traffic/month/test2.html")
+    gmap.draw("out/plot/traffic_monthly/{}_ride.html".format(month))
+
+    # draw alight traffic
+    gmap2 = myPlotter.from_geocode('Seoul')
+    color = 'green'
+    colnum_info = {'lat': 2, 'lng': 3, 'size': 5}
+    gmap2.scatter(data, colnum_info, color)
+    gmap2.draw("out/plot/traffic_monthly/{}_alight.html".format(month))
 
 
 if __name__ == '__main__':
-    output_dirs = ['./out/price/', './out/traffic/hour/', './out/traffic/month/']
-    for output_dir in output_dirs:
-        if not os.path.isdir(output_dir):
-            os.makedirs(output_dir)
     # hourly_traffic('201701')
-    # price_map()
-    traffic_map(201701)
+    # price_map('201701')
+    traffic_map('201701')

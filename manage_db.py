@@ -1,15 +1,10 @@
-import os
 import csv
 import sqlite3
 import strings
 
 
-output_dir = './out/'
-file_name = 'subway_location.db'
-db_file = output_dir + file_name
-
-
 def setup_db():
+    db_file = './out/dataframe/subway_location.db'
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
 
@@ -32,6 +27,7 @@ def setup_db():
 
 
 def get_location(name, line_num):
+    db_file = './out/dataframe/subway_location.db'
     station = check_station(name, line_num)
     # fetch data
     conn = sqlite3.connect(db_file)
@@ -82,6 +78,4 @@ def check_station(name, line_num):
 
 
 if __name__ == '__main__':
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
     setup_db()
