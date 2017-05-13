@@ -6,11 +6,7 @@ import xlrd
 
 
 def traffic_location(month):
-    output_dir = './out/traffic/'
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
-    file_name = 'monthly_traffic_' + month + '.csv'
-    csv_file = output_dir + file_name
+    csv_file = './out/traffic/monthly_traffic_' + month + '.csv'
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -30,11 +26,7 @@ def traffic_location(month):
 
 
 def price_location(month):
-    output_dir = './out/price/'
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
-    file_name = 'price_location_' + month + '.csv'
-    csv_file = output_dir + file_name
+    csv_file = './out/price/price_location_' + month + '.csv'
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -70,5 +62,9 @@ def price_location(month):
 
 
 if __name__ == '__main__':
+    output_dirs = ['./out/price/', './out/traffic/']
+    for output_dir in output_dirs:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
     # traffic_location('201701')
     price_location('201701')

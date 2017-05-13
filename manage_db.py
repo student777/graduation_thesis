@@ -28,6 +28,7 @@ def setup_db():
     c.execute('update stations set lat=37.4764956, lng=127.627492 where name="지평";')
     conn.commit()
     conn.close()
+    print('database created at {}'.format(db_file))
 
 
 def get_location(name, line_num):
@@ -84,4 +85,3 @@ if __name__ == '__main__':
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     setup_db()
-    print('database created')

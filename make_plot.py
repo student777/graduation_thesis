@@ -5,15 +5,12 @@ import os
 from gmplot import GoogleMapPlotter
 import csv
 
+
 def hourly_traffic(month):
     plot_len = 3
     plot_size = plot_len * plot_len
     traffic_list, count = traffic_by_hour(month)  # about 500 counts
     fig_num = int(count / plot_size)
-
-    output_dir = './out/img'
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
 
     for i in range(0, fig_num):
         i_from = i * plot_size
@@ -36,7 +33,7 @@ def hourly_traffic(month):
         fig.suptitle('지하철 역별 승차/하차 인원수')
         plt.tight_layout()
         plt.subplots_adjust(top=0.9)
-        path_to_save = '%s/hourly_traffic_%s.png' % (output_dir, "%.2d" % i)
+        path_to_save = './out/traffic/hour/hourly_traffic_{}_{}.png'.format(month, "%.2d" % i)
         fig.savefig(path_to_save)
         print('saved %s' % path_to_save)
         plt.close()
@@ -45,32 +42,42 @@ def hourly_traffic(month):
 
 
 class myPlotter(GoogleMapPlotter):
-    def scatter(self, lats, lngs, color=None, size=None, marker=True, c=None, s=None, **kwargs):
-        color = color or c
+    def scatter(self, data, colnum_info, color, **kwargs):
         kwargs["color"] = color
         settings = self._process_kwargs(kwargs)
-        for lat, lng, s in zip(lats, lngs, size):
-            if marker:
-                self.marker(lat, lng, settings['color'])
-            else:
-                self.circle(lat, lng, s, **settings)
+        with open(data, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in reader:
+                lat = float(row[colnum_info['lat']])
+                lng = float(row[colnum_info['lng']])
+                size = float(row[colnum_info['size']]) / 1000
+                self.circle(lat, lng, size, **settings)
 
 
-def price_map():
+def price_map(month):
     gmap = myPlotter.from_geocode('Seoul')
-    lat_list = []
-    lng_list = []
-    size_list = []
-    with open('out/price/price_location_201701.csv', newline='') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        for row in spamreader:
-            lat_list.append(float(row[0]))
-            lng_list.append(float(row[1]))
-            size_list.append(float(row[4]) / 1000)
-    gmap.scatter(lng_list, lat_list, '#3B0B39', size=size_list, marker=False)
-    gmap.draw("out/test.html")
+    data = 'out/price/price_location_{}.csv'.format(month)
+    colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
+    color = '3B0B39'
+    gmap.scatter(data, colnum_info, color)
+    gmap.draw("out/price/test.html")
+
+
+def traffic_map(month):
+    gmap = myPlotter.from_geocode('Seoul')
+    data = 'out/traffic/monthly_traffic_{}.csv'.format(month)
+    colnum_info = {'lat': 2, 'lng': 3, 'size': 4}
+    color = '#12a778'
+    gmap.scatter(data, colnum_info, color)
+    # gmap.scatter(data, 2, 3, 5, 'red')
+    gmap.draw("out/traffic/month/test2.html")
 
 
 if __name__ == '__main__':
+    output_dirs = ['./out/price/', './out/traffic/hour/', './out/traffic/month/']
+    for output_dir in output_dirs:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
     # hourly_traffic('201701')
-    price_map()
+    # price_map()
+    traffic_map(201701)
