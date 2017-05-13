@@ -39,12 +39,12 @@ def hourly_traffic(month):
         if not os.path.isdir(output_dir):
             os.makedirs(output_dir)
 
-        path_to_save = '{}}/{}.png'.format(output_dir, "%.2d" % i)
+        path_to_save = '{}/{}.png'.format(output_dir, "%.2d" % i)
         fig.savefig(path_to_save)
         print('saved %s' % path_to_save)
         plt.close()
 
-    print('finished successfully')
+    print('hourly traffic at {} finished successfully'.format(month))
 
 
 class myPlotter(GoogleMapPlotter):
@@ -80,6 +80,7 @@ def price_map(month, housing_type):
     color = '3B0B39'
     gmap.scatter(data, colnum_info, color)
     gmap.draw("out/plot/price_{}_{}.html".format(housing_type, month))
+    print('price {} at {} successfully finished'.format(housing_type, month))
 
 
 def traffic_map(month):
@@ -91,6 +92,7 @@ def traffic_map(month):
     color = '#12a778'
     gmap.scatter(data, colnum_info, color)
     gmap.draw("out/plot/traffic_ride_{}.html".format(month))
+    print('ride traffic at {} successfully finished'.format(month))
 
     # draw alight traffic
     gmap2 = myPlotter.from_geocode('Seoul')
@@ -98,9 +100,18 @@ def traffic_map(month):
     colnum_info = {'lat': 2, 'lng': 3, 'size': 5}
     gmap2.scatter(data, colnum_info, color)
     gmap2.draw("out/plot/traffic_alight_{}.html".format(month))
+    print('alight traffic at {} successfully finished'.format(month))
 
 
 if __name__ == '__main__':
     # hourly_traffic('201701')
-    price_map('201701', 'apartment_trade')
-    # traffic_map('201701')
+    # price_map('201701', 'apartment_rent')
+    # price_map('201701', 'apartment_trade')
+    # price_map('201701', 'multi_trade')
+    # price_map('201701', 'multi_rent')
+    # price_map('201701', 'multi_trade')
+    # price_map('201701', 'officetel_rent')
+    # price_map('201701', 'officetel_trade')
+    # price_map('201701', 'single_rent')
+    # price_map('201701', 'single_trade')
+    traffic_map('201701')

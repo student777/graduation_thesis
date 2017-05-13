@@ -63,14 +63,14 @@ def geopoint(address):
     try:
         response = urllib.request.urlopen(request, context=ssl._create_unverified_context())
     except urllib.error.HTTPError as e:
-        print(str(e) + address)
+        print(str(e), 'address: ', address)
         return
     rescode = response.getcode()
     if rescode == 200:
         response_dict = json.loads(response.read().decode('utf-8'))
         location = response_dict['result']['items'][0]['point']
     else:
-        print("Error Code:" + rescode)
+        print("Error Code:" + rescode + address)
     return location['x'], location['y']
 
 
@@ -101,4 +101,5 @@ def geopoint_reverse(lat, lng):
 if __name__ == '__main__':
     # traffic_by_date('20170101')
     # traffic_by_hour('201701')
-    print(geopoint_reverse(37.540693, 127.070230) == '서울특별시')
+    # print(geopoint_reverse(37.540693, 127.070230) == '서울특별시')
+    print(geopoint('공릉로41나길'))

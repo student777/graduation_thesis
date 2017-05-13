@@ -33,7 +33,7 @@ def traffic_location(month):
             ride = sum(traffic['ride'])
             alight = sum(traffic['alight'])
             csvwriter.writerow([name, line_num, lat, lng, ride, alight])
-    print('successfully finished')
+    print('traffic at {} successfully finished'.month)
 
 
 def price_location(month, housing_type):
@@ -41,7 +41,7 @@ def price_location(month, housing_type):
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        book = xlrd.open_workbook('res/price_{}_{}.xlsx'.format(month, housing_type))
+        book = xlrd.open_workbook('res/price_{}_{}.xlsx'.format(housing_type, month))
         sh = book.sheet_by_index(0)
         counter_total = 0
         counter_api = 0
@@ -50,10 +50,16 @@ def price_location(month, housing_type):
         for rx in range(1, number_rows):
             counter_total += 1
             if counter_total % 100 == 0:
-                print('{}/{} completed'.format(counter_total, number_rows))
+                print('{}: {}/{} completed'.format(housing_type, counter_total, number_rows))
 
             row = sh.row(rx)
-            address, area, year_bulit, price = get_housing_info(row, housing_type)
+
+            # Handle omitted data
+            try:
+                address, area, year_bulit, price = get_housing_info(row, housing_type)
+            except ValueError as e:
+                print(str(e), row)
+                continue
 
             # To prevent address duplicates
             if address in address_dict.keys():
@@ -63,11 +69,13 @@ def price_location(month, housing_type):
                 counter_api += 1
                 if point is None:  # HTTP 404 error
                     continue
+                lat, lng = point
                 address_dict[address] = point
 
-            csvwriter.writerow([point[0], point[1], area, year_bulit, price])
+            csvwriter.writerow([lat, lng, area, year_bulit, price])
+
         print('API used: {} counts'.format(counter_api))
-    print('successfully finished')
+    print('price {} at {} successfully finished'.format(housing_type, month))
 
 
 def get_housing_info(row, housing_type):
@@ -82,25 +90,25 @@ def get_housing_info(row, housing_type):
         price = int(row[9].value.replace(',', ''))
         year_bulit = int(row[10].value)
     elif housing_type == 'single_trade':
-        address = row[0].value + ' ' + row[8].value
+        address = row[8].value
         area = float(row[4].value)
         price = int(row[6].value.replace(',', ''))
         year_bulit = int(row[7].value)
     elif housing_type == 'officetel_trade':
-        address = row[0].value + ' ' + row[8].value
+        address = row[0].value + ' ' + row[1].value
         area = float(row[5].value)
-        price = int(row[6].value.replace(',', ''))
-        year_bulit = int(row[7].value)
+        price = int(row[8].value.replace(',', ''))
+        year_bulit = int(row[10].value)
     elif housing_type == 'apartment_rent':
         address = row[0].value + ' ' + row[1].value
         area = float(row[6].value)
         price = int(row[9].value.replace(',', '')) + 100 * int(row[10].value.replace(',', ''))
         year_bulit = int(row[12].value)
     elif housing_type == 'single_rent':
-        address = row[0].value + ' ' + row[8].value
+        address = row[8].value
         area = float(row[1].value)
         price = int(row[5].value.replace(',', '')) + 100 * int(row[6].value.replace(',', ''))
-        year_bulit = int(row[7].value)
+        year_bulit = 0  # no data
     elif housing_type == 'multi_rent':
         address = row[0].value + ' ' + row[1].value
         area = float(row[6].value)
@@ -120,6 +128,13 @@ def get_housing_info(row, housing_type):
 
 
 if __name__ == '__main__':
-    traffic_location('201701')
-    # price_location('201701', 'multi_trade')
+    # traffic_location('201701')
     # price_location('201701', 'apartment_rent')
+    # price_location('201701', 'apartment_trade')
+    # price_location('201701', 'multi_trade')
+    # price_location('201701', 'multi_rent')
+    # price_location('201701', 'multi_trade')
+    # price_location('201701', 'officetel_rent')
+    price_location('201701', 'officetel_trade')
+    # price_location('201701', 'single_rent')
+    # price_location('201701', 'single_trade')
