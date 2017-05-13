@@ -32,7 +32,7 @@ def hourly_traffic(month):
         fig.suptitle('지하철 역별 승차/하차 인원수')
         plt.tight_layout()
         plt.subplots_adjust(top=0.9)
-        path_to_save = './out/plot/traffic_hourly/{}/{}.png'.format(month, "%.2d" % i)
+        path_to_save = './out/plot/traffic_hourly_{}/{}.png'.format(month, "%.2d" % i)
         fig.savefig(path_to_save)
         print('saved %s' % path_to_save)
         plt.close()
@@ -63,38 +63,37 @@ class myPlotter(GoogleMapPlotter):
     def cal_size(self, size, a, b):
         c, d = 100, 1000
         size_adjusted = (size - a) * (d - c) / (b - a) + c
-        print(size, size_adjusted)
         return size_adjusted
 
 
-def price_map(month):
+def price_map(month, housing_type):
     gmap = myPlotter.from_geocode('Seoul')
-    data = './out/dataframe/price_location_{}.csv'.format(month)
+    data = './out/dataframe/price_{}_{}.csv'.format(housing_type, month)
     colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
     color = '3B0B39'
     gmap.scatter(data, colnum_info, color)
-    gmap.draw("out/plot/price/{}.html".format(month))
+    gmap.draw("out/plot/price_{}_{}.html".format(housing_type, month))
 
 
 def traffic_map(month):
-    data = './out/dataframe/monthly_traffic_{}.csv'.format(month)
+    data = './out/dataframe/traffic_{}.csv'.format(month)
 
     # draw ride traffic
     gmap = myPlotter.from_geocode('Seoul')
     colnum_info = {'lat': 2, 'lng': 3, 'size': 4}
     color = '#12a778'
     gmap.scatter(data, colnum_info, color)
-    gmap.draw("out/plot/traffic_monthly/{}_ride.html".format(month))
+    gmap.draw("out/plot/traffic_ride_{}.html".format(month))
 
     # draw alight traffic
     gmap2 = myPlotter.from_geocode('Seoul')
     color = 'green'
     colnum_info = {'lat': 2, 'lng': 3, 'size': 5}
     gmap2.scatter(data, colnum_info, color)
-    gmap2.draw("out/plot/traffic_monthly/{}_alight.html".format(month))
+    gmap2.draw("out/plot/traffic_alight_{}.html".format(month))
 
 
 if __name__ == '__main__':
     # hourly_traffic('201701')
-    # price_map('201701')
-    traffic_map('201701')
+    price_map('201701', 'apartment_trade')
+    # traffic_map('201701')

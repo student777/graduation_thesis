@@ -63,12 +63,11 @@ def geopoint(address):
     try:
         response = urllib.request.urlopen(request, context=ssl._create_unverified_context())
     except urllib.error.HTTPError as e:
-        print(e)
+        print(str(e) + address)
         return
     rescode = response.getcode()
     if rescode == 200:
         response_dict = json.loads(response.read().decode('utf-8'))
-        print(response_dict)
         location = response_dict['result']['items'][0]['point']
     else:
         print("Error Code:" + rescode)

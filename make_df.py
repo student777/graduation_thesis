@@ -5,7 +5,7 @@ import xlrd
 
 
 def traffic_location(month):
-    csv_file = './out/dataframe/monthly_traffic_' + month + '.csv'
+    csv_file = './out/dataframe/traffic_' + month + '.csv'
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -36,12 +36,12 @@ def traffic_location(month):
     print('successfully finished')
 
 
-def price_location(month):
-    csv_file = './out/dataframe/price_location_' + month + '.csv'
+def price_location(month, housing_type):
+    csv_file = './out/dataframe/price_{}_{}.csv'.format(housing_type, month)
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        book = xlrd.open_workbook('res/price/{}/seoul/아파트(매매).xlsx'.format(month))
+        book = xlrd.open_workbook('res/{}/{}.xlsx'.format(month, housing_type))
         sh = book.sheet_by_index(0)
         counter_total = 0
         counter_api = 0
@@ -53,12 +53,9 @@ def price_location(month):
                 print('{}/{} completed'.format(counter_total, number_rows))
 
             row = sh.row(rx)
-            area = float(row[5].value)
-            price = int(row[8].value.replace(',', ''))
-            year_bulit = int(row[10].value)
+            address, area, year_bulit, price = get_housing_info(row, housing_type)
 
             # To prevent address duplicates
-            address = row[0].value + ' ' + row[1].value
             if address in address_dict.keys():
                 lat, lng = address_dict[address]
             else:
@@ -73,6 +70,56 @@ def price_location(month):
     print('successfully finished')
 
 
+def get_housing_info(row, housing_type):
+    if housing_type == 'apartment_trade':
+        address = row[0].value + ' ' + row[1].value
+        area = float(row[5].value)
+        price = int(row[8].value.replace(',', ''))
+        year_bulit = int(row[10].value)
+    elif housing_type == 'multi_trade':
+        address = row[0].value + ' ' + row[1].value
+        area = float(row[6].value)
+        price = int(row[9].value.replace(',', ''))
+        year_bulit = int(row[10].value)
+    elif housing_type == 'single_trade':
+        address = row[0].value + ' ' + row[8].value
+        area = float(row[4].value)
+        price = int(row[6].value.replace(',', ''))
+        year_bulit = int(row[7].value)
+    elif housing_type == 'officetel_trade':
+        address = row[0].value + ' ' + row[8].value
+        area = float(row[5].value)
+        price = int(row[6].value.replace(',', ''))
+        year_bulit = int(row[7].value)
+    elif housing_type == 'apartment_rent':
+        address = row[0].value + ' ' + row[1].value
+        area = float(row[6].value)
+        price = int(row[9].value.replace(',', '')) + 100 * int(row[10].value.replace(',', ''))
+        year_bulit = int(row[12].value)
+    elif housing_type == 'single_rent':
+        address = row[0].value + ' ' + row[8].value
+        area = float(row[1].value)
+        price = int(row[5].value.replace(',', '')) + 100 * int(row[6].value.replace(',', ''))
+        year_bulit = int(row[7].value)
+    elif housing_type == 'multi_rent':
+        address = row[0].value + ' ' + row[1].value
+        area = float(row[6].value)
+        price = int(row[9].value.replace(',', '')) + 100 * int(row[10].value.replace(',', ''))
+        year_bulit = int(row[12].value)
+    elif housing_type == 'officetel_rent':
+        address = row[0].value + ' ' + row[1].value
+        area = float(row[6].value)
+        price = int(row[9].value.replace(',', '')) + 100 * int(row[10].value.replace(',', ''))
+        year_bulit = int(row[12].value)
+    elif housing_type == 'land_trade':
+        # no address info
+        pass
+    else:
+        pass
+    return address, area, year_bulit, price
+
+
 if __name__ == '__main__':
     traffic_location('201701')
-    # price_location('201701')
+    # price_location('201701', 'multi_trade')
+    # price_location('201701', 'apartment_rent')
