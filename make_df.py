@@ -1,5 +1,4 @@
-import manage_db
-from get_data import traffic_by_hour, geopoint, geopoint_reverse
+from get_data import traffic_by_hour, geopoint, check_location
 import csv
 import xlrd
 
@@ -19,15 +18,8 @@ def traffic_location(month):
 
             name = traffic['name']
             line_num = traffic['line_num']
-            try:
-                lat, lng = manage_db.get_location(name, line_num)
-            except Exception as e:
-                print(e, traffic['name'], traffic['line_num'])
-                continue
-
-            # get Seoul only
-            location = geopoint_reverse(lat, lng)
-            if location != '서울특별시':
+            lat, lng, is_Seoul = check_location(name, line_num)
+            if not is_Seoul:
                 continue
 
             ride = sum(traffic['ride'])
