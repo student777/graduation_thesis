@@ -2,6 +2,7 @@ from get_data import traffic_by_hour, geopoint
 from manage_db import get_location
 import csv
 import xlrd
+import numpy
 
 
 def traffic_location(month):
@@ -112,6 +113,30 @@ def get_housing_info(row, housing_type):
     return address, area, year_bulit, price
 
 
+def cluster_station(month):
+    traffic_list = traffic_by_hour(month)
+    station_work_list = []
+    station_home_list = []
+    station_others_list = []
+    for traffic in traffic_list:
+        name = traffic['name']
+        line_num = traffic['line_num']
+        station = name + ' ' + line_num
+        i = numpy.argmax(traffic['ride']) + 4  # Seoul api starts from 4a .m.
+        j = numpy.argmax(traffic['alight']) + 4
+        if i in [18, 19, 20] and j in [7, 8, 9]:
+            station_work_list.append(station)
+        elif i in [7, 8, 9] and j in [18, 19, 20]:
+            station_home_list.append(station)
+        else:
+            station_others_list.append(station)
+
+    print(', '.join(station_work_list))
+    print(', '.join(station_home_list))
+    print(', '.join(station_others_list))
+    print('Clustering traffic at {} successfully finished'.format(month))
+
+
 if __name__ == '__main__':
     # traffic_location('201701')
     # price_location('201701', 'apartment_rent')
@@ -120,6 +145,7 @@ if __name__ == '__main__':
     # price_location('201701', 'multi_rent')
     # price_location('201701', 'multi_trade')
     # price_location('201701', 'officetel_rent')
-    price_location('201701', 'officetel_trade')
+    # price_location('201701', 'officetel_trade')
     # price_location('201701', 'single_rent')
     # price_location('201701', 'single_trade')
+    cluster_station('201701')

@@ -15,6 +15,8 @@ def traffic_by_hour(month):
     response = urllib.request.urlopen(api_endpoint)
     response_dict = json.loads(response.read().decode('utf-8'))
     traffic_list = []
+
+    # Counter required(check_seoul is slow)
     count_total = response_dict['CardSubwayTime']['list_total_count']
     print('Started fetching {} data wait...'.format(count_total))
     counter = 0
@@ -119,3 +121,4 @@ if __name__ == '__main__':
     # traffic_by_hour('201701')
     # print(geopoint_reverse(37.540693, 127.070230) == '서울특별시')
     # print(geopoint('공릉로41나길'))
+    print('ddd')
