@@ -9,8 +9,8 @@ import os
 def hourly_traffic(month):
     plot_len = 3
     plot_size = plot_len * plot_len
-    traffic_list, count = traffic_by_hour(month)  # about 500 counts
-    fig_num = int(count / plot_size)
+    traffic_list = traffic_by_hour(month)  # about 380 counts(Seoul)
+    fig_num = int(len(traffic_list) / plot_size)
     print('Number of plots to draw: {}'.format(fig_num))
 
     for i in range(0, fig_num):
@@ -78,7 +78,7 @@ def price_map(month, housing_type):
     gmap = myPlotter.from_geocode('Seoul')
     data = './out/dataframe/price_{}_{}.csv'.format(housing_type, month)
     colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
-    color = '3B0B39'
+    color = 'green'
     gmap.scatter(data, colnum_info, color)
     gmap.draw("out/plot/price_{}_{}.html".format(housing_type, month))
     print('price {} at {} successfully finished'.format(housing_type, month))
@@ -90,14 +90,14 @@ def traffic_map(month):
     # draw ride traffic
     gmap = myPlotter.from_geocode('Seoul')
     colnum_info = {'lat': 2, 'lng': 3, 'size': 4}
-    color = '#12a778'
+    color = 'blue'
     gmap.scatter(data, colnum_info, color)
     gmap.draw("out/plot/traffic_ride_{}.html".format(month))
     print('ride traffic at {} successfully finished'.format(month))
 
     # draw alight traffic
     gmap2 = myPlotter.from_geocode('Seoul')
-    color = 'green'
+    color = 'red'
     colnum_info = {'lat': 2, 'lng': 3, 'size': 5}
     gmap2.scatter(data, colnum_info, color)
     gmap2.draw("out/plot/traffic_alight_{}.html".format(month))
@@ -105,7 +105,7 @@ def traffic_map(month):
 
 
 if __name__ == '__main__':
-    hourly_traffic('201701')
+    # hourly_traffic('201701')
     # price_map('201701', 'apartment_rent')
     # price_map('201701', 'apartment_trade')
     # price_map('201701', 'multi_trade')
@@ -115,4 +115,4 @@ if __name__ == '__main__':
     # price_map('201701', 'officetel_trade')
     # price_map('201701', 'single_rent')
     # price_map('201701', 'single_trade')
-    # traffic_map('201701')
+    traffic_map('201701')

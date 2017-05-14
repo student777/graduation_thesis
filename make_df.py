@@ -1,4 +1,5 @@
-from get_data import traffic_by_hour, geopoint, check_location
+from get_data import traffic_by_hour, geopoint
+from manage_db import get_location
 import csv
 import xlrd
 
@@ -8,24 +9,16 @@ def traffic_location(month):
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        traffic_list, _ = traffic_by_hour(month)
-        counter = 0
-        counter_total = len(traffic_list)
-        for traffic in traffic_list:
-            counter += 1
-            if counter % 100 == 0:
-                print('{}/{} completed'.format(counter, counter_total))
+        traffic_list = traffic_by_hour(month)
 
+        for traffic in traffic_list:
             name = traffic['name']
             line_num = traffic['line_num']
-            lat, lng, is_Seoul = check_location(name, line_num)
-            if not is_Seoul:
-                continue
-
+            lat, lng = get_location(name, line_num)
             ride = sum(traffic['ride'])
             alight = sum(traffic['alight'])
             csvwriter.writerow([name, line_num, lat, lng, ride, alight])
-    print('traffic at {} successfully finished'.month)
+    print('traffic at {} successfully finished'.format(month))
 
 
 def price_location(month, housing_type):
