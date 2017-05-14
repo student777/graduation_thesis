@@ -74,10 +74,10 @@ def get_housing_info(row, housing_type):
         address = row[0].value + ' ' + row[1].value
         area = float(row[6].value)
         price = int(row[9].value.replace(',', ''))
-        year_bulit = int(row[10].value)
+        year_bulit = int(row[11].value)
     elif housing_type == 'single_trade':
         address = row[8].value
-        area = float(row[4].value)
+        area = float(row[3].value)
         price = int(row[6].value.replace(',', ''))
         year_bulit = int(row[7].value)
     elif housing_type == 'officetel_trade':
