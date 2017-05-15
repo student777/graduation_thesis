@@ -60,9 +60,10 @@ def geopoint(address):
     if rescode == 200:
         response_dict = json.loads(response.read().decode('utf-8'))
         location = response_dict['result']['items'][0]['point']
+        lat, lng = location['y'], location['x']  # 127.111, 37.11 -> 37.11, 127.111
     else:
         print("Error Code:" + rescode + address)
-    return location['x'], location['y']
+    return lat, lng
 
 
 def check_seoul(lat, lng):
@@ -119,6 +120,5 @@ def traffic_by_date(date):
 if __name__ == '__main__':
     # traffic_by_date('20170101')
     # traffic_by_hour('201701')
-    # print(geopoint_reverse(37.540693, 127.070230) == '서울특별시')
+    print(check_seoul(37.540693, 127.070230) == '서울특별시')
     # print(geopoint('공릉로41나길'))
-    print('ddd')

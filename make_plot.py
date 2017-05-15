@@ -40,7 +40,7 @@ class myPlotter(GoogleMapPlotter):
 def price_map(month, housing_type):
     gmap = myPlotter.from_geocode('Seoul')
     data = './out/dataframe/price_{}_{}.csv'.format(housing_type, month)
-    colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
+    colnum_info = {'lat': 0, 'lng': 1, 'size': 4}
     color = 'green'
     gmap.scatter(data, colnum_info, color)
     gmap.draw("out/plot/price_{}_{}.html".format(housing_type, month))
