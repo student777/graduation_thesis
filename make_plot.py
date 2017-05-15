@@ -6,6 +6,79 @@ import csv
 import os
 
 
+class myPlotter(GoogleMapPlotter):
+    size_min = 100
+    size_max = 1000
+
+    def scatter(self, data, colnum_info, color, **kwargs):
+        kwargs["color"] = color
+        settings = self._process_kwargs(kwargs)
+        with open(data, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            next(reader)  # Skip first row
+            size_list = []
+            for row in reader:
+                size = float(row[colnum_info['size']])
+                size_list.append(size)
+            x1, x2 = min(size_list), max(size_list)
+
+            csvfile.seek(0)  # reset the file to the beginning
+            next(reader)  # Skip first row
+            for row in reader:
+                lat = float(row[colnum_info['lat']])
+                lng = float(row[colnum_info['lng']])
+                size = float(row[colnum_info['size']])
+                size_adjusted = self.cal_size(size, x1, x2)
+                self.circle(lat, lng, size_adjusted, **settings)
+
+    def cal_size(self, size, x1, x2):
+        y1, y2 = self.size_min, self.size_max
+        size_adjusted = (size - x1) * (y2 - y1) / (x2 - x1) + y1  # Linear transform (x1, x2) -> (y1, y2)
+        return size_adjusted
+
+
+def price_map(month, housing_type):
+    gmap = myPlotter.from_geocode('Seoul')
+    data = './out/dataframe/price_{}_{}.csv'.format(housing_type, month)
+    colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
+    color = 'green'
+    gmap.scatter(data, colnum_info, color)
+    gmap.draw("out/plot/price_{}_{}.html".format(housing_type, month))
+    print('price {} at {} successfully finished'.format(housing_type, month))
+
+
+def traffic_map(month):
+    data = './out/dataframe/traffic_{}.csv'.format(month)
+
+    # draw ride traffic
+    gmap = myPlotter.from_geocode('Seoul')
+    colnum_info = {'lat': 2, 'lng': 3, 'size': 4}
+    color = 'blue'
+    gmap.scatter(data, colnum_info, color)
+    gmap.draw("out/plot/traffic_ride_{}.html".format(month))
+    print('ride traffic at {} successfully finished'.format(month))
+
+    # draw alight traffic
+    gmap2 = myPlotter.from_geocode('Seoul')
+    color = 'red'
+    colnum_info = {'lat': 2, 'lng': 3, 'size': 5}
+    gmap2.scatter(data, colnum_info, color)
+    gmap2.draw("out/plot/traffic_alight_{}.html".format(month))
+    print('alight traffic at {} successfully finished'.format(month))
+
+
+def traffic_grid_map(month):
+    data = './out/dataframe/traffic_grid_{}.csv'.format(month)
+    gmap = myPlotter.from_geocode('Seoul')
+    colnum_info = {'lat': 0, 'lng': 1, 'size': 2}
+    color = 'green'
+    gmap.size_min = 10
+    gmap.size_max = 3000
+    gmap.scatter(data, colnum_info, color)
+    gmap.draw("out/plot/traffic_grid_{}.html".format(month))
+    print('Traffic grid at {} successfully finished'.format(month))
+
+
 def hourly_traffic(month):
     plot_len = 3
     plot_size = plot_len * plot_len
@@ -48,64 +121,6 @@ def hourly_traffic(month):
     print('hourly traffic at {} finished successfully'.format(month))
 
 
-class myPlotter(GoogleMapPlotter):
-    def scatter(self, data, colnum_info, color, **kwargs):
-        kwargs["color"] = color
-        settings = self._process_kwargs(kwargs)
-        with open(data, newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            next(reader)  # Skip first row
-            size_list = []
-            for row in reader:
-                size = float(row[colnum_info['size']])
-                size_list.append(size)
-            a, b = min(size_list), max(size_list)
-
-            csvfile.seek(0)  # reset the file to the beginning
-            next(reader)  # Skip first row
-            for row in reader:
-                lat = float(row[colnum_info['lat']])
-                lng = float(row[colnum_info['lng']])
-                size = float(row[colnum_info['size']])
-                size_adjusted = self.cal_size(size, a, b)
-                self.circle(lat, lng, size_adjusted, **settings)
-
-    def cal_size(self, size, a, b):
-        c, d = 100, 1000
-        size_adjusted = (size - a) * (d - c) / (b - a) + c
-        return size_adjusted
-
-
-def price_map(month, housing_type):
-    gmap = myPlotter.from_geocode('Seoul')
-    data = './out/dataframe/price_{}_{}.csv'.format(housing_type, month)
-    colnum_info = {'lat': 1, 'lng': 0, 'size': 4}
-    color = 'green'
-    gmap.scatter(data, colnum_info, color)
-    gmap.draw("out/plot/price_{}_{}.html".format(housing_type, month))
-    print('price {} at {} successfully finished'.format(housing_type, month))
-
-
-def traffic_map(month):
-    data = './out/dataframe/traffic_{}.csv'.format(month)
-
-    # draw ride traffic
-    gmap = myPlotter.from_geocode('Seoul')
-    colnum_info = {'lat': 2, 'lng': 3, 'size': 4}
-    color = 'blue'
-    gmap.scatter(data, colnum_info, color)
-    gmap.draw("out/plot/traffic_ride_{}.html".format(month))
-    print('ride traffic at {} successfully finished'.format(month))
-
-    # draw alight traffic
-    gmap2 = myPlotter.from_geocode('Seoul')
-    color = 'red'
-    colnum_info = {'lat': 2, 'lng': 3, 'size': 5}
-    gmap2.scatter(data, colnum_info, color)
-    gmap2.draw("out/plot/traffic_alight_{}.html".format(month))
-    print('alight traffic at {} successfully finished'.format(month))
-
-
 if __name__ == '__main__':
     # hourly_traffic('201701')
     # price_map('201701', 'apartment_rent')
@@ -117,4 +132,5 @@ if __name__ == '__main__':
     # price_map('201701', 'officetel_trade')
     # price_map('201701', 'single_rent')
     # price_map('201701', 'single_trade')
-    traffic_map('201701')
+    # traffic_map('201701')
+    traffic_grid_map('201701')

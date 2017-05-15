@@ -141,9 +141,9 @@ def cluster_station(month):
 
 
 class Grid():
-    rows = 10
-    cols = 10
-    node_values = numpy.zeros((10, 10))
+    rows = 20
+    cols = 20
+    node_values = numpy.zeros((rows, cols))
 
     def __init__(self, lats, lngs):
         self.left, self.right = lngs
@@ -195,6 +195,7 @@ def traffic_grid(month):
     csv_file = './out/dataframe/traffic_grid_{}.csv'.format(month)
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow(['lat', 'lng', 'traffic'])
         for i in range(grid.rows):
             for j in range(grid.cols):
                 csvwriter.writerow(grid.get_node_info(i, j))
