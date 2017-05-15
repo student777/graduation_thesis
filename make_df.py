@@ -10,6 +10,7 @@ def traffic_location(month):
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow(['name', 'line_num', 'lat', 'lng', 'ride', 'alight'])
         traffic_list = traffic_by_hour(month)
 
         for traffic in traffic_list:
@@ -27,12 +28,14 @@ def price_location(month, housing_type):
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow(['lat', 'lng', 'area', 'year_bulit', 'price'])
         book = xlrd.open_workbook('res/price_{}_{}.xlsx'.format(housing_type, month))
         sh = book.sheet_by_index(0)
         counter_total = 0
         counter_api = 0
         address_dict = {}
         number_rows = sh.nrows
+        print('{}: Started fetching {} rows'.format(housing_type, number_rows))
         for rx in range(1, number_rows):
             counter_total += 1
             if counter_total % 100 == 0:
@@ -145,7 +148,7 @@ if __name__ == '__main__':
     # price_location('201701', 'multi_rent')
     # price_location('201701', 'multi_trade')
     # price_location('201701', 'officetel_rent')
-    # price_location('201701', 'officetel_trade')
+    price_location('201701', 'officetel_trade')
     # price_location('201701', 'single_rent')
     # price_location('201701', 'single_trade')
-    cluster_station('201701')
+    # cluster_station('201701')

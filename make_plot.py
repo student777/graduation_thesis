@@ -54,6 +54,7 @@ class myPlotter(GoogleMapPlotter):
         settings = self._process_kwargs(kwargs)
         with open(data, newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            next(reader)  # Skip first row
             size_list = []
             for row in reader:
                 size = float(row[colnum_info['size']])
@@ -61,6 +62,7 @@ class myPlotter(GoogleMapPlotter):
             a, b = min(size_list), max(size_list)
 
             csvfile.seek(0)  # reset the file to the beginning
+            next(reader)  # Skip first row
             for row in reader:
                 lat = float(row[colnum_info['lat']])
                 lng = float(row[colnum_info['lng']])
