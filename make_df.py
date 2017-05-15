@@ -6,7 +6,7 @@ import numpy
 
 
 def traffic_location(month):
-    csv_file = './out/dataframe/traffic_' + month + '.csv'
+    csv_file = './out/dataframe/traffic_{}.csv'.format(month)
 
     with open(csv_file, 'w', newline='') as cf:
         csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -140,6 +140,68 @@ def cluster_station(month):
     print('Clustering traffic at {} successfully finished'.format(month))
 
 
+class Grid():
+    rows = 10
+    cols = 10
+    node_values = numpy.zeros((10, 10))
+
+    def __init__(self, lats, lngs):
+        self.left, self.right = lngs
+        self.top, self.bottom = lats
+        self.lat_list = numpy.linspace(self.bottom, self.top, self.rows)
+        self.lng_list = numpy.linspace(self.left, self.right, self.cols)
+
+    def __str__(self):
+        return str(self.node_values)
+
+    def find_node_index(self, lat, lng):
+        i = numpy.argsort(numpy.abs(self.lat_list - lat))[0]  # get closest lat index
+        j = numpy.argsort(numpy.abs(self.lng_list - lng))[0]
+        return i, j
+
+    def get_node_info(self, i, j):
+        return [self.lat_list[i], self.lng_list[j], self.node_values[i][j]]
+
+    def set_node_traffic(self, i, j, traffic):
+        self.node_values[i][j] += traffic
+
+
+def traffic_grid(month):
+    file_name = 'out/dataframe/traffic_{}.csv'.format(month)
+    with open(file_name, newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',', quotechar='|')
+
+        # make grid
+        next(reader)
+        lat_list = []
+        lng_list = []
+        for row in reader:
+            lat_list.append(float(row[2]))
+            lng_list.append(float(row[3]))
+        lat = max(lat_list), min(lat_list)
+        lng = max(lng_list), min(lng_list)
+        grid = Grid(lat, lng)
+
+        # set traffic to node
+        csv_file.seek(0)
+        next(reader)
+        for row in reader:
+            lat, lng = float(row[2]), float(row[3])
+            traffic = int(row[4]) + int(row[5])
+            i, j = grid.find_node_index(lat, lng)
+            grid.set_node_traffic(i, j, traffic)
+
+    # write dataframe
+    csv_file = './out/dataframe/traffic_grid_{}.csv'.format(month)
+    with open(csv_file, 'w', newline='') as cf:
+        csvwriter = csv.writer(cf, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for i in range(grid.rows):
+            for j in range(grid.cols):
+                csvwriter.writerow(grid.get_node_info(i, j))
+
+    print('traffic grid at {} successfully finished'.format(month))
+
+
 if __name__ == '__main__':
     # traffic_location('201701')
     # price_location('201701', 'apartment_rent')
@@ -148,7 +210,8 @@ if __name__ == '__main__':
     # price_location('201701', 'multi_rent')
     # price_location('201701', 'multi_trade')
     # price_location('201701', 'officetel_rent')
-    price_location('201701', 'officetel_trade')
+    # price_location('201701', 'officetel_trade')
     # price_location('201701', 'single_rent')
     # price_location('201701', 'single_trade')
     # cluster_station('201701')
+    traffic_grid('201701')
