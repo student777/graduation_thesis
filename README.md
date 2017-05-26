@@ -43,6 +43,7 @@ ref) http://rtdown.molit.go.kr
 # To do
 Regression: price ~ address + area + year_built  s.t. address = f('**구', '**동')  
 Grid: square -> pentagon  
+공시지가  
 
 
 # Required python library  
