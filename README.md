@@ -9,19 +9,19 @@ This is part of my graduation thesis..
 files at out_example/ 
 
 1) hourly traffic(ride/alight)  
-![](http://blog.wisebear.xyz/wp-content/uploads/2017/05/설입.png)
+![](http://blog.trinitas.xyz/wp-content/uploads/2017/05/설입.png)
 
 2) traffic map(ride)  
-![](http://blog.wisebear.xyz/wp-content/uploads/2017/05/ride2.png)
+![](http://blog.trinitas.xyz/wp-content/uploads/2017/05/ride2.png)
 
 3) traffic map(alight)  
-![](http://blog.wisebear.xyz/wp-content/uploads/2017/05/alight2.png)
+![](http://blog.trinitas.xyz/wp-content/uploads/2017/05/alight2.png)
 
 4) traffic map(total, grid)  
-![](http://blog.wisebear.xyz/wp-content/uploads/2017/05/grid2.png)  
+![](http://blog.trinitas.xyz/wp-content/uploads/2017/05/grid2.png)  
 
 5) price map  
-![](http://blog.wisebear.xyz/wp-content/uploads/2017/05/price2.png)  
+![](http://blog.trinitas.xyz/wp-content/uploads/2017/05/price2.png)  
 
 
 # Resources  
